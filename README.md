@@ -1,2 +1,3 @@
-# whatIfBooks
- Semantic Book Recommender 
+# **myBooks.**
+
+Semantic Book Recommender 
