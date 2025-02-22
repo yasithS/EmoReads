@@ -4,7 +4,6 @@ from dotenv import load_dotenv
 
 from langchain_community.document_loaders import TextLoader
 from langchain_openai import OpenAIEmbeddings
-from langchain_text_splitters import CharacterTextSplitter
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_chroma import Chroma
 
@@ -12,7 +11,7 @@ import gradio as gr
 
 load_dotenv()
 
-books = pd.read_csv("books_with_emotions.csv")
+books = pd.read_csv("data/books_with_emotions.csv")
 books["large_thumbnail"] = books["thumbnail"] + "&fife=w800"
 books["large_thumbnail"] = np.where(
     books["large_thumbnail"].isna(),
@@ -23,8 +22,6 @@ books["large_thumbnail"] = np.where(
 raw_documents = TextLoader("tagged_description.txt").load()
 text_splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=50)
 documents = text_splitter.split_documents(raw_documents)
-# text_splitter = CharacterTextSplitter(separator="\n", chunk_size=0, chunk_overlap=0)
-# documents = text_splitter.split_documents(raw_documents)
 db_books = Chroma.from_documents(documents, OpenAIEmbeddings())
 
 
@@ -37,16 +34,14 @@ def retrieve_semantic_recommendations(
 ) -> pd.DataFrame:
 
     recs = db_books.similarity_search(query, k=initial_top_k)
-    # books_list = [int(rec.page_content.strip('"').split()[0]) for rec in recs]
     books_list = []
     for rec in recs:
         first_word = rec.page_content.strip('"').split()[0]
         try:
-            book_id = int(first_word)  # Try to convert to integer
+            book_id = int(first_word)
             books_list.append(book_id)
         except ValueError:
-            # Handle non-numeric values, like 'Love.'
-            continue  # Skip this entry or handle as needed
+            continue
 
     book_recs = books[books["isbn13"].isin(books_list)].head(initial_top_k)
 
@@ -97,8 +92,8 @@ def recommend_books(
 categories = ["All"] + sorted(books["simple_categories"].unique())
 tones = ["All"] + ["Happy", "Surprising", "Angry", "Suspenseful", "Sad"]
 
-with gr.Blocks(theme = gr.themes.Glass()) as dashboard:
-    gr.Markdown("# Semantic book recommender")
+with gr.Blocks(theme = gr.themes.Monochrome()) as dashboard:
+    gr.Markdown("# emo-reeds")
 
     with gr.Row():
         user_query = gr.Textbox(label = "Please enter a description of a book:",
@@ -117,5 +112,4 @@ with gr.Blocks(theme = gr.themes.Glass()) as dashboard:
 
 if __name__ == "__main__":
     dashboard.launch()
-
 
