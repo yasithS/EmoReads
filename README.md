@@ -38,8 +38,8 @@ Following Dependencies are used in order to create this project
 by DylanCastillo 
 https://github.com/dylanjcastillo
 
+<img width="1512" alt="Screenshot 2025-02-22 at 3 11 31 PM" src="https://github.com/user-attachments/assets/1d7fa8e2-effa-490b-bf44-51bae080572b" />
 
-<img width="1512" alt="dashboard" src="https://github.com/user-attachments/assets/939fe646-217c-4db2-af21-afd13da096ba" />
 
 
 
